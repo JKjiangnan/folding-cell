@@ -1,55 +1,76 @@
 ![header](./header.png)
+![Animation](./Screenshots/folding-cell.gif)
+
 # FoldingCell
 [![CocoaPods](https://img.shields.io/cocoapods/p/FoldingCell.svg)](https://cocoapods.org/pods/FoldingCell)
 [![CocoaPods](https://img.shields.io/cocoapods/v/FoldingCell.svg)](http://cocoapods.org/pods/FoldingCell)
+[![Carthage compatible](https://img.shields.io/badge/Carthage-compatible-4BC51D.svg?style=flat)](https://github.com/Ramotion/folding-cell)
 [![Twitter](https://img.shields.io/badge/Twitter-@Ramotion-blue.svg?style=flat)](http://twitter.com/Ramotion)
 [![Travis](https://img.shields.io/travis/Ramotion/folding-cell.svg)](https://travis-ci.org/Ramotion/folding-cell)
 [![codebeat badge](https://codebeat.co/badges/6f67da5d-c416-4bac-9fb7-c2dc938feedc)](https://codebeat.co/projects/github-com-ramotion-folding-cell)
+[![Carthage compatible](https://img.shields.io/badge/Carthage-compatible-4BC51D.svg?style=flat)](https://github.com/Carthage/Carthage)
+[![Analytics](https://ga-beacon.appspot.com/UA-84973210-1/ramotion/folding-cell)](https://github.com/igrigorik/ga-beacon)
 
-[shot on dribbble](https://dribbble.com/shots/2121350-Delivery-Card):
-![Animation](Screenshots/folding-cell.gif)
+# Check this library on other platforms:
+<a href="https://github.com/Ramotion/folding-cell-android"> 
+<img src="https://github.com/ramotion/navigation-stack/raw/master/Android_Java@2x.png" width="178" height="81"></a>
+
+**Looking for developers for your project?**<br>
+This project is maintained by Ramotion, Inc. We specialize in the designing and coding of custom UI for Mobile Apps and Websites.
+
+<a href="https://ramotion.com/?utm_source=gthb&utm_medium=special&utm_campaign=folding-cell-contact-us/#Get_in_Touch">
+<img src="https://github.com/ramotion/gliding-collection/raw/master/contact_our_team@2x.png" width="187" height="34"></a> <br>
 
 
-The [iPhone mockup](https://store.ramotion.com/product/iphone-6-mockups?utm_source=gthb&utm_medium=special&utm_campaign=folding-cell) available [here](https://store.ramotion.com/product/iphone-6-mockups?utm_source=gthb&utm_medium=special&utm_campaign=folding-cell).
+The [iPhone mockup](https://store.ramotion.com?utm_source=gthb&utm_medium=special&utm_campaign=folding-cell) available [here](https://store.ramotion.com?utm_source=gthb&utm_medium=special&utm_campaign=folding-cell).
+
 ## Requirements
 
 - iOS 8.0+
-- Xcode 7.3
+- Xcode 9.0+
 
 ## Installation
 
 Just add the FoldingCell.swift file to your project.
 
 or use [CocoaPods](https://cocoapods.org) with Podfile:
-``` ruby
-pod 'FoldingCell', '~> 0.8.1'
 ```
-    
+pod 'FoldingCell'
+```
+or [Carthage](https://github.com/Carthage/Carthage) users can simply add Mantle to their `Cartfile`:
+```
+github "Ramotion/folding-cell"
+
+```
+
+or just drag and drop FoldingCell.swift file to your project
 
 ## Solution
-![Solution](/Tutorial-resources/Solution.png)
+![Solution](https://raw.githubusercontent.com/Ramotion/folding-cell/master/Tutorial-resources/Solution.png)
 ## Usage
 
 1) Create a new cell inheriting from `FoldingCell`
 
 2) Add a UIView to your cell in your storyboard or nib file, inheriting from `RotatedView`.
 Connect the outlet from this view to the cell property `foregroundView`.
-Add constraints from this view to the superview, as in this picture: 
-![1.1](/Tutorial-resources/1.1.png)
+Add constraints from this view to the superview, as in this picture:
 
-(constants of constraints may be different). Add the identifier `ForegroundViewTop`
-for the top constraint. (This view will be shown when the cell is in its normal state).
+![1.1](https://raw.githubusercontent.com/Ramotion/folding-cell/master/Tutorial-resources/1.1.png)
+
+(constants of constraints may be different). Connect the outlet from this top constraint to the cell property `foregroundViewTop`
+. (This view will be shown when the cell is in its normal state).
 
 3) Add other UIViews to your cell, connect the outlet from this view to the cell
 property `containerView`. Add constraints from this view to the superview like in the picture:
 
-![1.2](/Tutorial-resources/1.2.png)
+![1.2](https://raw.githubusercontent.com/Ramotion/folding-cell/master/Tutorial-resources/1.2.png)
 
-(constants of constraints may be different). Add the identifier "ContainerViewTop" for the top constraint.
+(constants of constraints may be different). Connect the outlet from this top constraint to the cell property `containerViewTop`.
 (This view will be shown when the cell is opened)
 
 Your result should be something like this picture:
-![1.3](/Tutorial-resources/1.3.png)
+
+![1.3](https://raw.githubusercontent.com/Ramotion/folding-cell/master/Tutorial-resources/1.3.png)
 
 [Demonstration adding constraints for foregroundView, containerView](https://vimeo.com/154954299)
 
@@ -61,24 +82,17 @@ Ok, we've finished configuring the cell.
 
 5.1) Add constants:
 ``` swift
-     let kCloseCellHeight: CGFloat = *** // equal or greater foregroundView height
-     let kOpenCellHeight: CGFloat = *** // equal or greater containerView height
+fileprivate struct C {
+  struct CellHeight {
+    static let close: CGFloat = *** // equal or greater foregroundView height
+    static let open: CGFloat = *** // equal or greater containerView height
+  }
+}
 ```
-5.2) Add property
+5.2) Add property for calculate cells height
 
 ``` swift
-     var cellHeights = [CGFloat]()
-```
-
-     create in viewDidLoad:
-``` swift
-     override func viewDidLoad() {
-        super.viewDidLoad()
-
-        for _ in 0...kRowsCount {
-            cellHeights.append(kCloseCellHeight)
-        }
-    }
+     var cellHeights = (0..<CELLCOUNT).map { _ in C.CellHeight.close }
 ```
 
 5.3) Override method:
@@ -91,7 +105,9 @@ Ok, we've finished configuring the cell.
 5.4) Added code to method:
 ``` swift
     override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-        let cell = tableView.cellForRowAtIndexPath(indexPath) as! FoldingCell
+        guard case let cell as FoldingCell = tableView.cellForRowAtIndexPath(indexPath) else {
+          return
+        }
 
         var duration = 0.0
         if cellHeights[indexPath.row] == kCloseCellHeight { // open cell
@@ -104,7 +120,7 @@ Ok, we've finished configuring the cell.
             duration = 1.1
         }
 
-        UIView.animateWithDuration(duration, delay: 0, options: .CurveEaseOut, animations: { () -> Void in
+        UIView.animateWithDuration(duration, delay: 0, options: .CurveEaseOut, animations: { _ in
             tableView.beginUpdates()
             tableView.endUpdates()
         }, completion: nil)
@@ -114,17 +130,15 @@ Ok, we've finished configuring the cell.
 ``` swift
   override func tableView(tableView: UITableView, willDisplayCell cell: UITableViewCell, forRowAtIndexPath indexPath: NSIndexPath) {
 
-        if cell is FoldingCell {
-            let foldingCell = cell as! FoldingCell
-
-            if cellHeights![indexPath.row] == kCloseCellHeight {
+        if case let cell as FoldingCell = cell {
+            if cellHeights![indexPath.row] == C.cellHeights.close {
                 foldingCell.selectedAnimation(false, animated: false, completion:nil)
             } else {
                 foldingCell.selectedAnimation(true, animated: false, completion: nil)
             }
         }
     }
-``` 
+```
 
 6) Add this code to your new cell class
 ``` swift
@@ -136,15 +150,28 @@ Ok, we've finished configuring the cell.
     }
 ```
 
+## if don't use storyboard and xib files
+
+Create foregroundView and containerView from code (steps 2 - 3) look example:
+[Folding-cell-programmatically](https://github.com/ober01/Folding-cell-programmatically)
+
 ## Licence
 
 Folding cell is released under the MIT license.
 See [LICENSE](./LICENSE) for details.
 
+<br>
 
-## About
-The project maintained by [app development agency](https://ramotion.com?utm_source=gthb&utm_medium=special&utm_campaign=foolding-cell) [Ramotion Inc.](https://ramotion.com?utm_source=gthb&utm_medium=special&utm_campaign=foolding-cell)
-See our other [open-source projects](https://github.com/ramotion) or [hire](https://ramotion.com?utm_source=gthb&utm_medium=special&utm_campaign=foolding-cell) us to design, develop, and grow your product.
+# Get the Showroom App for iOS to give it a try
+Try this UI component and more like this in our iOS app. Contact us if interested.
 
-[![Twitter URL](https://img.shields.io/twitter/url/http/shields.io.svg?style=social)](https://twitter.com/intent/tweet?text=https://github.com/ramotion/foolding-cell)
+<a href="https://itunes.apple.com/app/apple-store/id1182360240?pt=550053&ct=folding-cell&mt=8" >
+<img src="https://github.com/ramotion/gliding-collection/raw/master/app_store@2x.png" width="117" height="34"></a>
+
+<a href="https://ramotion.com/?utm_source=gthb&utm_medium=special&utm_campaign=folding-cell-contact-us/#Get_in_Touch">
+<img src="https://github.com/ramotion/gliding-collection/raw/master/contact_our_team@2x.png" width="187" height="34"></a>
+<br>
+<br>
+
+Follow us for the latest updates<br>[![Twitter URL](https://img.shields.io/twitter/url/http/shields.io.svg?style=social)](https://twitter.com/intent/tweet?text=https://github.com/ramotion/folding-cell)
 [![Twitter Follow](https://img.shields.io/twitter/follow/ramotion.svg?style=social)](https://twitter.com/ramotion)
